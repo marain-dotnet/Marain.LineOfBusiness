@@ -8,7 +8,7 @@ Proposed
 
 As described in ADR0001, we are intending to build a new Marain API providing a standardized schema for common entities used in line-of-business applications.
 
-This API is logically separated into three, as described by the service definition files at INCLUDE LINKS HERE:
+This API is logically separated into three, as described by [the service definition files here.](https://github.com/marain-dotnet/Marain.LineOfBusiness/tree/master/Solutions/ServiceDefinitions/Prototyping):
 - Organizational units and their data and relationships
 - People and their data and relationships
 - The relationships between organizational units and people
