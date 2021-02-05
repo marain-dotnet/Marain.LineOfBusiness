@@ -1,0 +1,62 @@
+﻿schemas:
+  PersonName:
+    type: object
+    description: The name of a person
+    required:
+    - givenName
+    - familyName
+    - otherNames
+    properties:
+      title:
+        type: string
+        description: The person's title or honorific
+        maxLength: 50
+        minLength: 1
+      givenName:
+        type: string
+        description: The person's given or first name
+        maxLength: 50
+        minLength: 1
+      familyName:
+        type: string
+        description: The person's family or last name
+        maxLength: 50
+        minLength: 1
+      suffix:
+        type: string
+        description: The suffix to the person's name
+      otherNames:
+        type: array
+        description: Middle/additional names for the person
+        minItems: 0
+        maxItems: 10
+        items:
+          type: string
+          minLength: 0
+          maxLength: 50
+
+  PersonNameListResource:
+    description: A resource representation of a list of names related to some source entity.
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:        
+        _embedded:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/PersonNameResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  PersonNameResource:
+    description: A person name
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - $ref: '#/components/schemas/PersonName'

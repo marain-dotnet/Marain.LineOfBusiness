@@ -1,0 +1,261 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Marain Line of Business Organizational Unit People API
+  description: An API for storing information about the relationship between people and organizational units.
+  license:
+    name: MIT
+servers:
+  - url: /
+paths:
+  /{tenantId}/marain/people/{personId}/related/organizationalUnits:
+    get:
+      summary: Get organizational units related to this person, optionally filtering to particular relationship types, and/or particular target organizational unit hrefs.
+      operationId: getPersonToOrganizationalUnitRelationships
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/personId'
+        - $ref: '#/components/parameters/rel'
+        - $ref: '#/components/parameters/href'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/OrganizationalUnit.yaml#/components/schemas/RelatedOrganizationalUnitsListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    delete:
+      summary: Delete a specific relationship between a person and an organizational unit
+      operationId: deletePersonToOrganizationalUnitRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/personId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    post:
+      summary: Add a relationship between a person and an organizational unit
+      operationId: addPersonToPersonRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/personId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+      requestBody:
+        description: Additional properties for the relationship
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              uniqueItems: true
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/related/people:
+    get:
+      summary: Get people related to this organizational unit, optionally filtering to particular relationship types, and/or particular target organizational unit hrefs.
+      operationId: getOrganizationalUnitToPersonRelationships
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/rel'
+        - $ref: '#/components/parameters/href'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/Person.yaml#/components/schemas/RelatedPeopleListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    delete:
+      summary: Delete a specific relationship between an organizational unit and a person
+      operationId: deleteOrganizationalUnitToPersonRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    post:
+      summary: Add a relationship between an organizational unit and a person
+      operationId: addOrganizationalUnitToPersonRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+      requestBody:
+        description: Additional properties for the relationship
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              uniqueItems: true
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+components:
+  parameters:
+    rel:
+      name: rel
+      in: query
+      description: the optional relationship types for a relationship-related query
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    href:
+      name: href
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        format: url
+      description: The URL for the target organizational unit in the relationship
+
+    requiredRel:
+      name: rel
+      in: query
+      description: the type of the relationship
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+
+    requiredHref:
+      name: href
+      in: query
+      required: true
+      schema:
+        type: string
+        format: url
+      description: The URL for the target in the relationship
+
+    tenantId:
+      name: tenantId
+      in: path
+      required: true
+      description: the ID of the tenant making the request
+      schema:
+        type: string
+
+    organizationalUnitId:
+      name: organizationalUnitId
+      in: path
+      required: true
+      description: the ID of the organizational unit related to the request
+      schema:
+        type: string
+
+    personId:
+      name: personId
+      in: path
+      required: true
+      description: the ID of the person related to the request
+      schema:
+        type: string

@@ -1,0 +1,74 @@
+﻿schemas:
+  Address:
+    description: A postal address
+    type: object
+    required:
+    - addressLine1
+    - townOrCity
+    - postalCode
+    properties:
+      addressLine1:
+        type: string
+        minLength: 1
+        maxLength: 50
+      addressLine2:
+        type: string
+        minLength: 1
+        maxLength: 50
+      townOrCity:
+        type: string
+        minLength: 1
+        maxLength: 50
+      region:
+        type: string
+        minLength: 1
+        maxLength: 50
+      postalCode:
+        type: string
+        minLength: 1
+        maxLength: 50
+      timeZone:
+        type: string
+      location:
+        $ref: '#/components/schemas/LatLongPoint'
+
+  AddressListResource:
+    description: A resource representation of a list of addresses
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/AddressResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  AddressResource:
+    description: A resource representation of an address
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - $ref: '#/components/schemas/Address'
+
+  LatLongPoint:
+    description: A point defined by latitude and longitude in geojson format.
+    properties:
+      type:
+        type: string
+        enum:
+          - "point"
+      coordinates:
+        type: array
+        items:
+          type: number
+        minItems: 2
+        maxItems: 2
+

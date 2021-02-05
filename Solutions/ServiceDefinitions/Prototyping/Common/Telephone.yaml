@@ -1,0 +1,55 @@
+﻿schemas:
+  TelephoneNumber:
+    description: A telephone number compliant with the E.164 numbering plan
+    type: object
+    required:
+    - countryCode
+    - nationalDestinationCode
+    - subscriberNumber
+    properties:
+      countryCode:
+        type: string
+        minLength: 1
+        maxLength: 3
+        pattern: ^[+]?\d{1,2}$
+      nationalDestinationCode:
+        type: string
+        minLength: 1
+        maxLength: 4
+        pattern: ^d{1,4}$
+      subscriberNumber:
+        type: string
+        minLength: 8
+        maxLength: 13
+        pattern: ^d{8,13}$
+      timeZone:
+        type: string
+      
+  TelephoneNumberListResource:
+    description: A resource representation of a list of telephone numbers
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/TelephoneNumberResource'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/TelephoneNumberResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  TelephoneNumberResource:
+    description: A resource representation of a telephone number
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/TelephoneNumber'
+

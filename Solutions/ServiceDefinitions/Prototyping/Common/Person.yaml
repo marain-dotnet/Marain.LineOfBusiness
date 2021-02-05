@@ -1,0 +1,97 @@
+﻿schemas:
+  PersonListResource:
+    description: A resource representation of a list of people.
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:        
+        _embedded:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/PersonResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  RelatedPeopleListResource:
+    description: A resource representation of a list of people related to some source person.
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/RelatedPersonResource'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/RelatedPersonResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  RelatedPersonResource:
+    allOf:
+    - $ref: '#/components/schemas/PersonResource'
+    - type: object
+      properties:
+        rel:
+          type: string
+          description: The relationship with the given person
+        properties:
+          type: object
+          additionalProperties: true
+          uniqueItems: true
+      additionalProperties: true
+
+  PersonResource:
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - type: object
+      properties:
+        _links:
+          type: object
+          title: Hyperlinks
+          description: Represents hyperlinks from the containing resource to a URI.
+          required:
+          - primaryName # Always provide a primary name link
+          properties:
+            primaryName:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+            names:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            addresses:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            telephoneNumbers:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            emailAddresses:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            uniqueItems: true
+        _embedded:
+          type: object
+          required:
+          - primaryName # always embed the primary name
+          properties:
+            primaryName:
+              $ref: 'PersonName.yaml#/components/schemas/PersonNameResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true

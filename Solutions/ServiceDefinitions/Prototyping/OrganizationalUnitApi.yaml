@@ -1,0 +1,753 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Marain Line of Business Organizational Unit API
+  description: An API for storing information about organizations.
+  license:
+    name: MIT
+servers:
+  - url: /
+paths:
+  /{tenantId}/marain/organizationalUnits/:
+    get:
+      summary: Get a list of organizational units, optionally expanding particular relationship types and embedding certain relationships.
+      operationId: getOrganizationalUnits
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/rel'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/embed'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxEmbedded'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/OrganizationalUnit.yaml#/components/schemas/OrganizationalUnitListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    post:
+      summary: Create an organizational unit
+      operationId: createOrganizationalUnit
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+      requestBody:
+        description: the details of the organizational unit to create
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationalUnitRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}:
+    get:
+      summary: Get an organizational unit
+      operationId: getOrganizationalUnit
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/rel'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/embed'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxEmbedded'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/OrganizationalUnit.yaml#/components/schemas/OrganizationalUnitResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/related/organizationalUnits:
+    get:
+      summary: Get organizational units related to this organizational unit, optionally filtering to particular relationship types, and/or particular target organizational unit hrefs.
+      operationId: getOrganizationalUnitToOrganizationUnitRelationships
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/rel'
+        - $ref: '#/components/parameters/href'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/OrganizationalUnit.yaml#/components/schemas/RelatedOrganizationalUnitsListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    delete:
+      summary: Delete a specific relationship between two organizational units
+      operationId: deleteOrganizationalUnitToOrganizationalUnitRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    post:
+      summary: Add a relationship to another organizational unit
+      operationId: addOrganizationalUnitToOrganizationalUnitRelationship
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/requiredRel'
+        - $ref: '#/components/parameters/requiredHref'
+      requestBody:
+        description: Additional properties for the relationship
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              uniqueItems: true
+      responses:
+        202:
+          description: Accepted
+          
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/telephoneNumbers:
+    get:
+      summary: Get an organizational unit's telephone numbers
+      operationId: getOrganizationalUnitTelephoneNumbers
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/Telephone.yaml#/components/schemas/TelephoneNumberListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    post:
+      summary: Add a telephone number for the organizational unit
+      operationId: addOrganizationalUnitTelephoneNumber
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+      requestBody:
+        description: The telephone number to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTelephoneNumberRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/telephoneNumbers/{telephoneNumberId}:
+    get:
+      summary: Get a particular telephone number
+      operationId: getOrganizationalUnitTelephoneNumber
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/telephoneNumberId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/Telephone.yaml#/components/schemas/TelephoneNumberResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    put:
+      summary: Replace a telephone number for the organizational unit
+      operationId: replaceOrganizationalUnitTelephoneNumber
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/telephoneNumberId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      requestBody:
+        description: The telephone number with which to replace the given number
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceTelephoneNumberRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    delete:
+      summary: Delete a telephone number for the organizational unit
+      operationId: deleteOrganizationalUnitTelephoneNumber
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/telephoneNumberId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/addresses:
+    get:
+      summary: Get an organizational unit's addresses
+      operationId: getOrganizationalUnitAddresses
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/AddressesAndLocations.yaml#/components/schemas/AddressListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    post:
+      summary: Add an address for the organizational unit
+      operationId: addOrganizationalUnitAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+      requestBody:
+        description: The address to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddAddressRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/addresses/{addressId}:
+    get:
+      summary: Get a particular address
+      operationId: getOrganizationalUnitAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/addressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/AddressesAndLocations.yaml#/components/schemas/AddressResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    put:
+      summary: Replace an address for the organizational unit
+      operationId: replaceOrganizationalUnitAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/addressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      requestBody:
+        description: The address with which to replace the given address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceAddressRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    delete:
+      summary: Delete an address for the organizational unit
+      operationId: deleteOrganizationalUnitAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/addressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/emailAddresses:
+    get:
+      summary: Get an organizational unit's email addresses
+      operationId: getOrganizationalUnitEmailAddresses
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/continuationToken'
+        - $ref: 'Common/ResourcesAndLinks.yaml#/components/parameters/maxItems'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/Email.yaml#/components/schemas/EmailAddressListResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+    post:
+      summary: Add an email address for the organizational unit
+      operationId: addOrganizationalUnitEmailAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+      requestBody:
+        description: The email address to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEmailAddressRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+  /{tenantId}/marain/organizationalUnits/{organizationalUnitId}/contactDetails/emailAddresses/{emailAddressId}:
+    get:
+      summary: Get a particular email address
+      operationId: getOrganizationalUnitEmailAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/emailAddressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: 'Common/Email.yaml#/components/schemas/EmailAddressResource'
+          headers:
+            ETag:
+              $ref: 'Common/ConditionalHeaders.yaml#/components/schemas/ETag'
+        304:
+          description: Not modified
+        400:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/BadRequest'
+        403:
+          description: Forbidden
+        404:
+          description: Not found
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    put:
+      summary: Replace an email address for the organizational unit
+      operationId: replaceOrganizationalUnitEmailAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/emailAddressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      requestBody:
+        description: The email address with which to replace the given email address
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplaceEmailAddressRequest'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+    delete:
+      summary: Delete an email address for the organizational unit
+      operationId: deleteOrganizationalUnitEmailAddress
+      parameters:
+        - $ref: '#/components/parameters/tenantId'
+        - $ref: '#/components/parameters/organizationalUnitId'
+        - $ref: '#/components/parameters/emailAddressId'
+        - $ref: 'Common/ConditionalHeaders.yaml#/components/parameters/ifMatch'
+      responses:
+        202:
+          description: Accepted
+          headers:
+            Location:
+              schema:
+                type: string
+                format: url
+              description: the URL of the Marain.OperationsStatus API for this operation.
+        400:
+          description: Bad request
+        403:
+          description: Forbidden
+        default:
+            $ref: 'Common/ProblemDetailsAndErrors.yaml#/components/responses/UnexpectedError'
+
+components:
+  parameters:
+    rel:
+      name: rel
+      in: query
+      description: the optional relationship types for a relationship-related query
+      required: false
+      style: form
+      explode: true
+      schema:
+        type: array
+        items:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    href:
+      name: href
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+        format: url
+      description: The URL for the target organizational unit in the relationship
+
+    requiredRel:
+      name: rel
+      in: query
+      description: the type of the relationship
+      required: true
+      style: form
+      explode: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 50
+
+    requiredHref:
+      name: href
+      in: query
+      required: true
+      schema:
+        type: string
+        format: url
+      description: The URL for the target organizational unit in the relationship
+
+    tenantId:
+      name: tenantId
+      in: path
+      required: true
+      description: the ID of the tenant making the request
+      schema:
+        type: string
+
+    organizationalUnitId:
+      name: organizationalUnitId
+      in: path
+      required: true
+      description: the ID of the organizational unit related to the request
+      schema:
+        type: string
+
+    addressId:
+      name: addressId
+      in: path
+      required: true
+      description: the ID of the address related to the request
+      schema:
+        type: string
+
+    emailAddressId:
+      name: emailAddressId
+      in: path
+      required: true
+      description: the ID of the email address related to the request
+      schema:
+        type: string
+
+    telephoneNumberId:
+      name: telephoneNumberId
+      in: path
+      required: true
+      description: the ID of the telephone number related to the request
+      schema:
+        type: string
+
+  schemas:
+    AddEmailAddressRequest:
+      description: An email address to add
+      type: object
+      properties:
+        emailAddress:
+          $ref: 'Common/Email.yaml#/components/schemas/EmailAddress'
+
+    ReplaceEmailAddressRequest:
+      description: An email address to replace
+      type: object
+      properties:
+        emailAddress:
+          $ref: 'Common/Email.yaml#/components/schemas/EmailAddress'
+
+    AddTelephoneNumberRequest:
+      description: A telephone number to add
+      type: object
+      properties:
+        telephoneNumber:
+          $ref: 'Common/Telephone.yaml#/components/schemas/TelephoneNumber'
+
+    ReplaceTelephoneNumberRequest:
+      description: A telephone number to replace
+      type: object
+      properties:
+        telephoneNumber:
+          $ref: 'Common/Telephone.yaml#/components/schemas/TelephoneNumber'
+
+    AddAddressRequest:
+      description: An address to add
+      type: object
+      properties:
+        address:
+          $ref: 'Common/AddressesAndLocations.yaml#/components/schemas/Address'
+
+    ReplaceAddressRequest:
+      description: An address to replace
+      type: object
+      properties:
+        address:
+          $ref: 'Common/AddressesAndLocations.yaml#/components/schemas/Address'
+
+    CreateOrganizationalUnitRequest:
+      allOf:
+      - $ref: 'Common/OrganizationalUnit.yaml#/components/schemas/OrganizationalUnit'
+      - type: object
+        properties:
+          wellKnownId:
+            type: string
+            minLength: 1
+            maxLength: 100

@@ -1,0 +1,185 @@
+﻿schemas:
+  OrganizationalUnitListResource:
+    description: A resource representation of a list of organizational units.
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:        
+        _embedded:
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrganizationalUnitResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  RelatedOrganizationalUnitsListResource:
+    description: A resource representation of a list of organizational units related to some source organizational unit.
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/RelatedOrganizationalUnitResource'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/RelatedOrganizationalUnitResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+  
+  WellKnownHierachicalType:
+    type: string
+    enum:
+    - Group
+    - Company
+    - Division
+    - Department
+    - Workgroup
+    - Team
+    
+  WellKnownLegalType:
+    type: string
+    enum:
+    - Government
+    - GuaranteedLimitedCompany
+    - PublicLimitedCompany
+    - PrivateLimitedCompany
+    - CharitableLimitedCompany
+    - LimitedLiabilityPartnership
+    - Partnership
+    - SoleTrader
+
+  OrganizationalUnit:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+      hierarchicalType:
+        type: string
+      legalType:
+        type: string
+      legalName:
+        type: string
+      registeredNumber:
+        type: string
+      registeredJurisdication:
+        type: string
+      sicCode:
+        type: string
+
+  RelatedOrganizationalUnitResource:
+    allOf:
+    - $ref: '#/components/schemas/OrganizationalUnitResource'
+    - type: object
+      properties:
+        rel:
+          type: string
+          description: The relationship type
+        properties:
+          type: object
+          additionalProperties: true
+          uniqueItems: true
+      additionalProperties: true
+
+  OrganizationalUnitResource:
+    allOf:
+    - $ref: '#/components/schemas/OrganizationalUnit'
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'      
+    - type: object
+      properties:
+        _links:
+          type: object
+          title: Hyperlinks
+          description: Represents hyperlinks from the containing resource to a URI.
+          properties:
+            legalAddress:
+              $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+            addresses:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            telephoneNumbers:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            emailAddresses:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  OrganizationalUnitContactDetailsResource:
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - type: object
+      properties:
+        _links:
+          type: object
+          title: Hyperlinks
+          description: Represents hyperlinks from the containing resource to a URI.
+          properties:
+            address:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            telephoneNumber:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            emailAddress:
+              anyOf:
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+              - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Link'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/LinkCollection'
+            uniqueItems: true
+        _embedded:
+          type: object
+          properties:
+            address:
+              anyOf:
+              - $ref: 'AddressesAndLocations.yaml#/components/schemas/AddressResource'
+              - type: array
+                items:
+                  $ref: 'AddressesAndLocations.yaml#/components/schemas/AddressResource'
+            telephoneNumber:
+              anyOf:
+              - $ref: 'Telephone.yaml#/components/schemas/TelephoneNumberResource'
+              - type: array
+                items:
+                  $ref: 'Telephone.yaml#/components/schemas/TelephoneNumberResource'
+            emailAddress:
+              anyOf:
+              - $ref: 'Email.yaml#/components/schemas/EmailAddressResource'
+              - type: array
+                items:
+                  $ref: 'Email.yaml#/components/schemas/EmailAddressResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true

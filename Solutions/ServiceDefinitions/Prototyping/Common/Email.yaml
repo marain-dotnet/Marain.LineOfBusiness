@@ -1,0 +1,38 @@
+﻿schemas:
+  EmailAddress:
+    description: An email address in standard foo@bar.com format.
+    required:
+    - address
+    properties:      
+      address:
+        type: string
+        format: email # TODO: should this be an idn-email?
+        
+  
+  EmailAddressListResource:
+    description: A resource representation of a list of email addresses
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/PagedListResource'
+    - type: object
+      properties:
+        _embedded:
+          type: object
+          properties:
+            items:
+              anyOf:
+              - $ref: '#/components/schemas/EmailAddressResource'
+              - type: array
+                items:
+                  $ref: '#/components/schemas/EmailAddressResource'
+          additionalProperties:
+            anyOf:
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+            - $ref: 'ResourcesAndLinks.yaml#/components/schemas/ResourceCollection'
+            uniqueItems: true
+      additionalProperties: true
+
+  EmailAddressResource:
+    description: A resource representation of an email address
+    allOf:
+    - $ref: 'ResourcesAndLinks.yaml#/components/schemas/Resource'
+    - $ref: '#/components/schemas/EmailAddress'
